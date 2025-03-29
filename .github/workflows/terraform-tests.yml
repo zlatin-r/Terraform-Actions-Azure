@@ -1,0 +1,35 @@
+name: Trraform Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  terraform-test:
+    name: Terraform Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install the latest version of Terraform CLI
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+
+      # Initialize a new or existing Terraform working directory
+      - name: Terraform Init
+        run: terraform init
+
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terraform Format
+        run: terraform fmt -check -recursive
+
+      # Validate Terraform files
+      - name: Terraform Validate
+        run: terraform validate
