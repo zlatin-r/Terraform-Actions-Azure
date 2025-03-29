@@ -74,7 +74,7 @@ jobs:
 
       # Download saved plan from artifact
       - name: Download Terraform Plan
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: tfplan
 
