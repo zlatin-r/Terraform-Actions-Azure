@@ -1,0 +1,83 @@
+name: Terraform Plan and Apply
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan/Apply
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Login to Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }} 
+          
+      # Install the latest version of Terraform CLI
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+
+      # Initialize a new or existing Terraform working directory
+      # by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+      # Generates an execution plan for Terraform
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -input=false -out=tfplan
+
+      # Save plan to artifacts
+      - name: Save Terraform Plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: tfplan
+          
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Install the latest version of Terraform CLI
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+
+      # Initialize a new or existing Terraform working directory
+      # by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        run: terraform init
+
+      # Download saved plan from artifact
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+
+      # Apply Terraform plan
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
