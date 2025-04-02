@@ -26,8 +26,8 @@ jobs:
         with:
           terraform_version: latest
           
-      - name: Terraform Init with Unlock Fallback
-        run: terraform init || (echo "Init failed, attempting to unlock..." && terraform force-unlock -force $(terraform state pull | jq -r '.serial') && terraform init)
+      - name: Terraform Init
+        run: terraform init
 
       - name: Terraform Format
         run: terraform fmt -check -recursive
