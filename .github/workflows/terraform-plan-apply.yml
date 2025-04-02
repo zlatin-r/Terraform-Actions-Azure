@@ -32,7 +32,7 @@ jobs:
           terraform_version: latest
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform -input=false -migrate-state
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
@@ -58,7 +58,7 @@ jobs:
           terraform_version: latest
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform -input=false -migrate-state
 
       - name: Download Terraform Plan
         uses: actions/download-artifact@v4
@@ -68,4 +68,3 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
 
-        
