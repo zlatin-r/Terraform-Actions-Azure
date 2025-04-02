@@ -27,7 +27,10 @@ jobs:
           terraform_version: latest
           
       - name: Terraform Init
-        run: terraform init
+        run: terraform init || \
+              (echo "Init failed, attempting to unlock..." && \
+              terraform force-unlock -force $(terraform state pull | jq -r '.serial') && \
+              terraform init)
 
       - name: Terraform Format
         run: terraform fmt -check -recursive
