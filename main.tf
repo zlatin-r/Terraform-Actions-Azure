@@ -2,16 +2,16 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.116.0"
+      version = "4.24.0"
     }
   }
 
-  #  backend "azurerm" {
-  #    resource_group_name  = "StorageRG"
-  #    storage_account_name = "taskboardstoragezlt"
-  #    container_name       = "taskboardcontainerzlt"
-  #    key                  = "terraform.tfstate"
-  #  }
+  backend "azurerm" {
+    resource_group_name  = "StorageRG"
+    storage_account_name = "taskboardstoragezlt"
+    container_name       = "taskboardcontainerzlt"
+    key                  = "terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
