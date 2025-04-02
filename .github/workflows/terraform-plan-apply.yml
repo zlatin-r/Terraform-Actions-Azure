@@ -18,33 +18,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository to the GitHub Actions runner
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Login to Azure
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }} 
           
-      # Install the latest version of Terraform CLI
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: latest
 
-      # Initialize a new or existing Terraform working directory
-      # by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: terraform init
 
-      # Generates an execution plan for Terraform
       - name: Terraform Plan
         id: plan
         run: terraform plan -input=false -out=tfplan
 
-      # Save plan to artifacts
       - name: Save Terraform Plan
         uses: actions/upload-artifact@v4
         with:
@@ -57,27 +50,21 @@ jobs:
     needs: terraform-plan
 
     steps:
-      # Checkout the repository to the GitHub Actions runner
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Install the latest version of Terraform CLI
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: latest
 
-      # Initialize a new or existing Terraform working directory
-      # by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         run: terraform init
 
-      # Download saved plan from artifact
       - name: Download Terraform Plan
         uses: actions/download-artifact@v4
         with:
           name: tfplan
 
-      # Apply Terraform plan
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
